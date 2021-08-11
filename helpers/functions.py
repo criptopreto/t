@@ -1,3 +1,6 @@
+from binance.client import Client
+
+
 def read_symbols()-> list:
     data = []
     print("Leyendo archivo de symbols...")
