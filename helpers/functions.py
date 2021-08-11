@@ -37,6 +37,33 @@ def read_intervals()-> list:
     file_intervals.close()
     return data
 
+def get_definition(x: str) -> str:
+    return ' hours' if x[-1:] == 'h' else (' minutes' if x[-1:] == "m" else (' days' if x[-1:] == "d" else " weeks"))
+
+def generate_data(df: pd.DataFrame) -> list:
+    df = df.groupby('symbol')
+    result_data = []
+    for name, group in df:
+        result_data.append({"par": name, "chg": group.iloc[-1]["chg"],
+                            "min": round(group.iloc[-1]["low"], 8), "max": round(group.iloc[-1]["high"], 8),
+                            "vol": group.iloc[-1]["volume"], "color": group.iloc[-1][f"color"]})
+
+    return result_data
+
+def get_time_coeficient(interval: str) -> float:
+    try:
+        int_types = {
+            "h": 1,
+            "m": 0.0166666666666667,
+            "d": 24,
+        }
+        type_interval = interval[-1:]
+        let_number = re.sub("\D", "", interval)
+        result = float(int_types[type_interval] * float(let_number))
+        return result
+    except Exception as e:
+        return 0
+
 def get_historic(symbol: str, window: str, client: Client, is_thread: bool = False):
     par_filename = f"data/pares_ohlc/{symbol}_{window}.csv"
     # Buscamos el archivo localmente para verificar si tenemos información guardada
