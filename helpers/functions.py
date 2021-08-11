@@ -1,0 +1,107 @@
+def read_symbols()-> list:
+    data = []
+    print("Leyendo archivo de symbols...")
+    file_symbols = open("symbols.txt", "r")
+    for linea in file_symbols:
+        if linea[0] == "#":
+            pass
+        else:
+            linea = linea.strip("\n")
+            if len(linea) > 0:
+                data.append(linea)
+    
+    print(f"Leidos {len(data)} symbols {data}")
+
+    file_symbols.close()
+    return data
+
+def read_intervals()-> list:
+    data = []
+    print("Leyendo archivo de intervals...")
+    file_intervals = open("intervals.txt", "r")
+    for linea in file_intervals:
+        if linea[0] == "#":
+            pass
+        else:
+            linea = linea.strip("\n")
+            if len(linea) > 0:
+                data.append(linea)
+    
+    print(f"Leidos {len(data)} intervals {data}")
+
+    file_intervals.close()
+    return data
+
+def get_historic(symbol: str, window: str, client: Client, is_thread: bool = False):
+    par_filename = f"data/pares_ohlc/{symbol}_{window}.csv"
+    # Buscamos el archivo localmente para verificar si tenemos información guardada
+    if not Path(par_filename).exists():
+        try:
+            time_start = int(window[0:1] if len(
+                window) == 2 else window[0:2]) * 1100
+            delta_start = str(time_start) + get_definition(window)
+            start_str = str((pd.to_datetime(
+                "today") - pd.Timedelta(delta_start)).date())
+
+            data = pd.DataFrame(client.get_historical_klines(symbol=symbol, start_str=start_str, interval=window),
+                                columns=['datetime', 'open', 'high', 'low', 'close', 'volume', 'closetime',
+                                         'quoteAssetVolume', 'numberOfTrades', 'takerBuyBaseVol', 'takerBuyQuoteVol',
+                                         'ignore'])
+
+            data.datetime = pd.to_datetime(data.datetime, unit="ms")
+            data.closetime = pd.to_datetime(data.closetime, unit="ms")
+
+            data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"
+                                                                     ]].apply(pd.to_numeric)
+            data = data[['datetime', 'open', 'high',
+                         'low', 'close', 'volume', 'closetime']]
+
+            data.to_csv(par_filename, index=False)
+
+            # add_kandle_to_par(item, kandle=df_raw, interval=window)
+        except Exception as e:
+            print("Error get Historic", e)
+    else:
+        if not os.stat(par_filename).st_size == 0:
+            par_df = pd.read_csv(par_filename)
+            # Obtenemos el último registro
+            try:
+                last_reg = pd.to_datetime(par_df.iloc[-1]["datetime"]) - pd.Timedelta("4 Hours")
+
+                # Verificamos si ha pasado tiempo válido entre el último registro y ahora.
+
+                interval_coeficient = get_time_coeficient(window)
+
+                if float(pd.Timedelta(pd.to_datetime("today") - last_reg).value / 3600000000000) >= interval_coeficient:
+                    last_reg = str(last_reg + pd.Timedelta(str("4 Hours")))
+
+                    data = pd.DataFrame(
+                        client.get_historical_klines(symbol=symbol, start_str=last_reg, interval=window),
+                        columns=['datetime', 'open', 'high', 'low', 'close', 'volume', 'closetime',
+                                 'quoteAssetVolume', 'numberOfTrades', 'takerBuyBaseVol',
+                                 'takerBuyQuoteVol',
+                                 'ignore'])
+
+                    data.datetime = pd.to_datetime(data.datetime, unit="ms")
+                    data.closetime = pd.to_datetime(data.closetime, unit="ms")
+
+                    data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"
+                                                                             ]].apply(pd.to_numeric)
+
+                    data = data[["datetime", "open", "high",
+                                 "low", "close", "volume", "closetime"]][0:]
+
+                    # Eliminar el último registro del archivo guardado para reemplazarlo por el registro actualizado
+                    par_df.drop(par_df.tail(1).index, inplace=True)
+
+                    par_df = par_df.append(data, ignore_index=True)
+
+                    par_df.to_csv(par_filename, index=False)
+                    # gen_squeeze(par_df, symbol, interval)
+                else:
+                    par_df[["open", "high", "low", "close", "volume"]] = par_df[
+                        ["open", "high", "low", "close", "volume"
+                         ]].apply(pd.to_numeric)
+
+            except IndexError:
+                print("error get historic", IndexError)

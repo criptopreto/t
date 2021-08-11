@@ -1,0 +1,49 @@
+import configparser
+
+from binance.client import Client
+
+from helpers.functions import read_symbols, read_intervals, get_historic
+# Variables
+data_general = []
+
+# Configuracion
+config = configparser.ConfigParser()
+config.read_file(open("secret.cfg"))
+api_key = config.get('BINANCE', "ACTUAL_API_KEY")
+secret_key = config.get("BINANCE", "ACTUAL_SECRET_KEY")
+
+print("### POWER OSCILLATOR SCANNER ###")
+print("######### VERSIÓN 0.0.1 ########")
+print("### INICIALIZANDO EL SISTEMA ###")
+
+symbols = read_symbols()
+
+# Vamos a leer los pares para cada symbols
+
+if len(symbols) == 0:
+    print("Por favor agregue los symbols al archivo symbols.txt")
+
+print("Leyendo pares desde binance")
+client = Client(api_key, secret_key)
+pairs_df = client.get_all_tickers()
+
+print("Leyendo pares para cada una de los symbols")
+for symbol in symbols:
+    data_smb = {}
+    data_smb["symbol"] = symbol
+    data_smb["pairs"] = [x for x in (pairs_df[y]["symbol"] for y in range(
+                len(pairs_df))) if x[-len(symbol):] == symbol]
+    print(f"{symbol} | {len(data_smb['pairs'])} Pares validos.")
+    data_general.append(data_smb)
+
+print("Leyendo la configuración de los intervals...")
+
+intervals = read_intervals()
+
+print("Extraer data para cada par en cada interval")
+for interval in intervals:
+    for data in data_general:
+        for pair in data["pairs"]:
+            get_historic(pair, interval, client)
+
+print("Finalizado")
