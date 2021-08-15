@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 import re
-import time
 
 import pandas as pd
 from binance.client import Client
@@ -74,6 +73,7 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
     # Buscamos el archivo localmente para verificar si tenemos información guardada
     if not Path(par_filename).exists():
         try:
+            print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} | Inicio {symbol}")
             time_start = int(window[0:1] if len(
                 window) == 2 else window[0:2]) * 1100
             delta_start = str(time_start) + get_definition(window)
@@ -94,7 +94,7 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
                          'low', 'close', 'volume', 'closetime']]
 
             data.to_csv(par_filename, index=False)
-
+            print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} | fin")
             # add_kandle_to_par(item, kandle=df_raw, interval=window)
         except Exception as e:
             set_i
