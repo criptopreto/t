@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import re
+import time
 
 import pandas as pd
 from binance.client import Client

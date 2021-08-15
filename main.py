@@ -1,4 +1,5 @@
 import configparser
+import time
 
 from binance.client import Client
 
@@ -60,5 +61,6 @@ for interval in intervals:
         for pair in data["pairs"]:
             get_historic(pair, interval, client)
 print("Listo")
+print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
 print("Finalizado")
