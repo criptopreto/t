@@ -3,6 +3,7 @@ import configparser
 from binance.client import Client
 
 from helpers.functions import read_symbols, read_intervals, get_historic
+from database.crud import set_symbol, add_pairs_to_symbol
 # Variables
 data_general = []
 
@@ -22,10 +23,17 @@ symbols = read_symbols()
 
 if len(symbols) == 0:
     print("Por favor agregue los symbols al archivo symbols.txt")
+    exit()
+
+print("Agregando los symbols a la base de datos...")
+for symbol in symbols:
+    set_symbol(symbol)
+print("Listo")
 
 print("Leyendo pares desde binance")
 client = Client(api_key, secret_key)
 pairs_df = client.get_all_tickers()
+print("Listo")
 
 print("Leyendo pares para cada una de los symbols")
 for symbol in symbols:
@@ -35,15 +43,22 @@ for symbol in symbols:
                 len(pairs_df))) if x[-len(symbol):] == symbol]
     print(f"{symbol} | {len(data_smb['pairs'])} Pares validos.")
     data_general.append(data_smb)
+print("Listo")
 
 print("Leyendo la configuración de los intervals...")
-
 intervals = read_intervals()
+print("Listo.")
+
+print("Guardar la lista de los pares en la base de datos")
+for pair_symbol in data_general:
+    add_pairs_to_symbol(pair_symbol["symbol"], pair_symbol["pairs"])
+print("Listo.")
 
 print("Extraer data para cada par en cada interval")
 for interval in intervals:
     for data in data_general:
         for pair in data["pairs"]:
             get_historic(pair, interval, client)
+print("Listo")
 
 print("Finalizado")
