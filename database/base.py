@@ -3,6 +3,7 @@ from pymongo import MongoClient
 
 conexion = MongoClient('127.0.0.1:27017',username="enj0nach0",password="Cort4unh4!.")
 db = conexion.oscillator
+db_pair = conexion.oscillator_pairs
 
 def exists_item(collection: str, key: str, value: str)-> ObjectId:
     try:
