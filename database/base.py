@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 
-conexion = MongoClient('mongo:27017',username="enj0nach0",password="Cort4unh4!.")
+conexion = MongoClient('127.0.0.1:27017',username="enj0nach0",password="Cort4unh4!.")
 db = conexion.oscillator
 
 def exists_item(collection: str, key: str, value: str)-> ObjectId:
