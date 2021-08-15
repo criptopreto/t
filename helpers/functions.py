@@ -5,7 +5,7 @@ import time
 
 import pandas as pd
 from binance.client import Client
-from database.crud import set_invalid_pair
+from database.crud import set_invalid_pair, save_historic
 
 
 def read_symbols()-> list:
@@ -96,7 +96,8 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
                                                                         ]].apply(pd.to_numeric)
                 data = data[['datetime', 'open', 'high',
                             'low', 'close', 'volume', 'closetime']]
-
+                
+                save_historic(data)
                 data.to_csv(par_filename, index=False)
         except Exception as e:
             print(f"{symbol} | Error get Historic: {e}")

@@ -1,5 +1,8 @@
 from bson import ObjectId
+import json
+
 import pandas as pd
+
 from .base import db, exists_item, get_itemid
 from .models import Symbol, Pair, pair_data
 
@@ -38,3 +41,10 @@ def set_invalid_pair(pair_name: str, interval: str):
             print(f"{pair_name} - {interval} | Invalidado con éxito.")
     except Exception as e:
         print(f"{pair_name}-{interval} | Set ivalid pair: {e}")
+
+def save_historic(pair_data: pd.DataFrame):
+    try:
+        records = json.loads(pair_data.to_json(orient="records"))
+        print(records)
+    except Exception as e:
+        pass
