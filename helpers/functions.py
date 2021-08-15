@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import re
+import time
 
 import pandas as pd
 from binance.client import Client
@@ -97,7 +98,6 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
             print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} | fin")
             # add_kandle_to_par(item, kandle=df_raw, interval=window)
         except Exception as e:
-            set_i
             print(f"{symbol} | Error get Historic: {e}")
             print("Invalidando par")
             set_invalid_pair(symbol, window)
