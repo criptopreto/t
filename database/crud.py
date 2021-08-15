@@ -24,3 +24,17 @@ def add_pairs_to_symbol(symbol_name: str, pairs: list)->list:
     except Exception as e:
         print(f"{symbol_name} | Add pairs to symbols: {e}")
     return []
+
+def set_invalid_pair(pair_name: str, interval: str):
+    try:
+        pairinfo = exists_item("pairs", "name", pair_name)
+        if not pairinfo:
+            print("El par", pair_name, " no existe...")
+        else:
+            pair = Pair({"_id": pairinfo})
+            pair.reload()
+            pair[f"is_valid_{interval}"] = False
+            pair.save()
+            print(f"{pair_name} - {interval} | Invalidado con éxito.")
+    except Exception as e:
+        print(f"{pair_name}-{interval} | Set ivalid pair: {e}")

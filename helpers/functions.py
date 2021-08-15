@@ -4,6 +4,7 @@ import re
 
 import pandas as pd
 from binance.client import Client
+from database.crud import set_invalid_pair
 
 
 def read_symbols()-> list:
@@ -95,7 +96,10 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
 
             # add_kandle_to_par(item, kandle=df_raw, interval=window)
         except Exception as e:
+            set_i
             print(f"{symbol} | Error get Historic: {e}")
+            print("Invalidando par")
+            set_invalid_pair(symbol, window)
     else:
         if not os.stat(par_filename).st_size == 0:
             par_df = pd.read_csv(par_filename)
@@ -140,3 +144,5 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
 
             except IndexError:
                 print(f"{symbol} | Error get Historic: {IndexError}")
+                print("Invalidando par")
+                set_invalid_pair(symbol, window)
