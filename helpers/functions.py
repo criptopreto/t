@@ -98,7 +98,6 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
                             'low', 'close', 'volume', 'closetime']]
                 
                 save_historic(data, symbol, window)
-                data.to_csv(par_filename, index=False)
         except Exception as e:
             print(f"{symbol} | Error get Historic: {e}")
             print("Invalidando par")
