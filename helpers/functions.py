@@ -95,7 +95,7 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
 
             # add_kandle_to_par(item, kandle=df_raw, interval=window)
         except Exception as e:
-            print("Error get Historic", e)
+            print(f"{symbol} | Error get Historic: {e}")
     else:
         if not os.stat(par_filename).st_size == 0:
             par_df = pd.read_csv(par_filename)

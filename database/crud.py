@@ -21,5 +21,5 @@ def add_pairs_to_symbol(symbol_name: str, pairs: list)->list:
             new_par = Pair(pair)
             new_par.save()
     except Exception as e:
-        print("Add pairs to symbols", e)
+        print(f"{symbol_name} | Add pairs to symbols: {e}")
     return []
