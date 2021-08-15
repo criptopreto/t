@@ -1,7 +1,7 @@
 from bson import ObjectId
 import pandas as pd
 from .base import db, exists_item, get_itemid
-from .models import Symbol, Pair
+from .models import Symbol, Pair, pair_data
 
 def set_symbol(name: str) -> bool:
     try:
@@ -17,6 +17,7 @@ def add_pairs_to_symbol(symbol_name: str, pairs: list)->list:
     try:
         symbol = get_itemid("symbols", "name", symbol_name)
         for pair in pairs:
+            pair = pair_data(pair)
             pair["symbol_id"] = symbol
             new_par = Pair(pair)
             new_par.save()
