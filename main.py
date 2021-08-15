@@ -56,8 +56,11 @@ for pair_symbol in data_general:
 print("Listo.")
 
 print("Extraer data para cada par en cada interval")
+print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 for interval in intervals:
+    print(f"Interval: {interval} | {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}")
     for data in data_general:
+        print(f"symbol: {data['symbol']} | {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}")
         for pair in data["pairs"]:
             get_historic(pair, interval, client)
 print("Listo")
