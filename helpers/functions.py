@@ -74,7 +74,6 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
     # Buscamos el archivo localmente para verificar si tenemos información guardada
     if not Path(par_filename).exists():
         try:
-            print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} | Inicio {symbol}")
             time_start = int(window[0:1] if len(
                 window) == 2 else window[0:2]) * 1100
             delta_start = str(time_start) + get_definition(window)
@@ -86,17 +85,19 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
                                          'quoteAssetVolume', 'numberOfTrades', 'takerBuyBaseVol', 'takerBuyQuoteVol',
                                          'ignore'])
 
-            data.datetime = pd.to_datetime(data.datetime, unit="ms")
-            data.closetime = pd.to_datetime(data.closetime, unit="ms")
+            if len(data.index) < 480:
+                print(f"{symbol} | Menor de 480 registros.")
+                set_invalid_pair(symbol, window)
+            else:
+                data.datetime = pd.to_datetime(data.datetime, unit="ms")
+                data.closetime = pd.to_datetime(data.closetime, unit="ms")
 
-            data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"
-                                                                     ]].apply(pd.to_numeric)
-            data = data[['datetime', 'open', 'high',
-                         'low', 'close', 'volume', 'closetime']]
+                data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"
+                                                                        ]].apply(pd.to_numeric)
+                data = data[['datetime', 'open', 'high',
+                            'low', 'close', 'volume', 'closetime']]
 
-            data.to_csv(par_filename, index=False)
-            print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} | fin")
-            # add_kandle_to_par(item, kandle=df_raw, interval=window)
+                data.to_csv(par_filename, index=False)
         except Exception as e:
             print(f"{symbol} | Error get Historic: {e}")
             print("Invalidando par")
