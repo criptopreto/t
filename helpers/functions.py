@@ -139,4 +139,4 @@ def get_historic(symbol: str, window: str, client: Client, is_thread: bool = Fal
                          ]].apply(pd.to_numeric)
 
             except IndexError:
-                print("error get historic", IndexError)
+                print(f"{symbol} | Error get Historic: {IndexError}")
