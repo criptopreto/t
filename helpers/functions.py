@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+import re
 
 import pandas as pd
 from binance.client import Client
