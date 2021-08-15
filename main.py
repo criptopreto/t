@@ -8,6 +8,9 @@ from database.crud import set_symbol, add_pairs_to_symbol
 # Variables
 data_general = []
 
+def log(msg: str):
+    print(f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())} | {msg}")
+
 # Configuracion
 config = configparser.ConfigParser()
 config.read_file(open("secret.cfg"))
@@ -26,44 +29,43 @@ if len(symbols) == 0:
     print("Por favor agregue los symbols al archivo symbols.txt")
     exit()
 
-print("Agregando los symbols a la base de datos...")
+log("Agregando los symbols a la base de datos...")
 for symbol in symbols:
     set_symbol(symbol)
-print("Listo")
+log("Listo")
 
-print("Leyendo pares desde binance")
+log("Leyendo pares desde binance")
 client = Client(api_key, secret_key)
 pairs_df = client.get_all_tickers()
-print("Listo")
+log("Listo")
 
-print("Leyendo pares para cada una de los symbols")
+log("Leyendo pares para cada una de los symbols")
 for symbol in symbols:
     data_smb = {}
     data_smb["symbol"] = symbol
     data_smb["pairs"] = [x for x in (pairs_df[y]["symbol"] for y in range(
                 len(pairs_df))) if x[-len(symbol):] == symbol]
-    print(f"{symbol} | {len(data_smb['pairs'])} Pares validos.")
+    log(f"{symbol} | {len(data_smb['pairs'])} Pares validos.")
     data_general.append(data_smb)
-print("Listo")
+log("Listo")
 
-print("Leyendo la configuración de los intervals...")
+log("Leyendo la configuración de los intervals...")
 intervals = read_intervals()
-print("Listo.")
+log("Listo.")
 
-print("Guardar la lista de los pares en la base de datos")
+log("Guardar la lista de los pares en la base de datos")
 for pair_symbol in data_general:
     add_pairs_to_symbol(pair_symbol["symbol"], pair_symbol["pairs"])
-print("Listo.")
+log("Listo.")
 
-print("Extraer data para cada par en cada interval")
-print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+log("Extraer data para cada par en cada interval")
 for interval in intervals:
     print(f"Interval: {interval} | {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}")
     for data in data_general:
         print(f"symbol: {data['symbol']} | {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}")
         for pair in data["pairs"]:
             get_historic(pair, interval, client)
-print("Listo")
-print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+log("Listo")
+log(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
-print("Finalizado")
+log("Finalizado")
