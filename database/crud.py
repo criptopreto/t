@@ -3,7 +3,7 @@ import json
 
 import pandas as pd
 
-from .base import db, db_pair, exists_item, get_itemid
+from .base import db, db_pair, exists_item, get_itemid, exists_item_pair
 from .models import Symbol, Pair, pair_data
 
 def set_symbol(name: str) -> bool:
@@ -16,7 +16,7 @@ def set_symbol(name: str) -> bool:
         print("SET SYMBOL : ", e)
         return False
 
-def add_pairs_to_symbol(symbol_name: str, pairs: list)->list:
+def add_pairs_to_symbol(symbol_name: str, pairs: list):
     try:
         symbol = get_itemid("symbols", "name", symbol_name)
         for pair in pairs:
@@ -28,7 +28,13 @@ def add_pairs_to_symbol(symbol_name: str, pairs: list)->list:
         print(f"{symbol_name} | Add pairs to symbols: {e}")
     return []
 
-def get_data_pair(pair_name: str, interval: str)->bool:
+def get_data_pair(pair_name: str, interval: str):
+    try:
+        query = db_pair[f"{pair_name}_{interval}"].find().count()
+        print(query)
+    except Exception as e:
+        print("Error")
+        pass
     return False
 
 def get_last_data_pair(pair_name: str, interval: str):
