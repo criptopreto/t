@@ -31,14 +31,19 @@ def add_pairs_to_symbol(symbol_name: str, pairs: list):
 def get_data_pair(pair_name: str, interval: str):
     try:
         query = db_pair[f"{pair_name}_{interval}"].find().count()
-        print(query)
+        if int(query) > 0:
+            return True
     except Exception as e:
         print("Error")
         pass
     return False
 
 def get_last_data_pair(pair_name: str, interval: str):
-    pass
+    try:
+        query = db_pair[f"{pair_name}_{interval}"].findOne().sort({'_id':-1}).limit(1)
+        print(query)
+    except print(0):
+        pass
 
 def set_invalid_pair(pair_name: str, interval: str):
     try:
