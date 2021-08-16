@@ -40,7 +40,7 @@ def get_data_pair(pair_name: str, interval: str):
 
 def get_last_data_pair(pair_name: str, interval: str):
     try:
-        query = db_pair[f"{pair_name}_{interval}"].findOne().sort({'_id':-1}).limit(1)
+        query = db_pair[f"{pair_name}_{interval}"].find_one().sort({'_id':-1}).limit(1)
         print(query)
     except Exception as e:
         print("Errir get last data pair", e)
