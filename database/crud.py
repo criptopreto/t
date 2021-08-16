@@ -28,6 +28,12 @@ def add_pairs_to_symbol(symbol_name: str, pairs: list)->list:
         print(f"{symbol_name} | Add pairs to symbols: {e}")
     return []
 
+def get_data_pair(pair_name: str, interval: str)->bool:
+    return False
+
+def get_last_data_pair(pair_name: str, interval: str):
+    pass
+
 def set_invalid_pair(pair_name: str, interval: str):
     try:
         pairinfo = exists_item("pairs", "name", pair_name)
