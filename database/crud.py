@@ -42,8 +42,8 @@ def get_last_data_pair(pair_name: str, interval: str):
     try:
         query = db_pair[f"{pair_name}_{interval}"].findOne().sort({'_id':-1}).limit(1)
         print(query)
-    except print(0):
-        pass
+    except Exception as e:
+        print("Errir get last data pair", e)
 
 def set_invalid_pair(pair_name: str, interval: str):
     try:
