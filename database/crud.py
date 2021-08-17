@@ -51,7 +51,6 @@ def get_pair_historic(pair_name: str, interval: str):
 def get_last_data_pair(pair_name: str, interval: str):
     try:
         query = db_pair[f"{pair_name}_{interval}"].find().sort('_id', DESCENDING).limit(1)
-        print(pair_name, query[1]["datetime"])
         return query[1]["datetime"]
     except Exception as e:
         print("Error get last data pair", e)

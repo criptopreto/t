@@ -104,7 +104,6 @@ def get_historic(pair: str, interval: str, client: Client):
             par_df = get_pair_historic(pair, interval)
             last_reg = pd.to_datetime(get_last_data_pair(pair, interval), unit="ms") - pd.Timedelta("4 Hours")
             interval_coeficient = get_time_coeficient(interval)
-            print(interval_coeficient)
             if float(pd.Timedelta(pd.to_datetime("today") - last_reg).value / 3600000000000) >= interval_coeficient:
                 last_reg = str(last_reg + pd.Timedelta(str("4 Hours")))
 
