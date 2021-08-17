@@ -2,6 +2,7 @@ from bson import ObjectId
 import json
 
 import pandas as pd
+from pymongo import DESCENDING
 
 from .base import db, db_pair, exists_item, get_itemid, exists_item_pair
 from .models import Symbol, Pair, pair_data
@@ -40,7 +41,7 @@ def get_data_pair(pair_name: str, interval: str):
 
 def get_last_data_pair(pair_name: str, interval: str):
     try:
-        query = db_pair[f"{pair_name}_{interval}"].find().sort({'_id':-1}).limit(1)
+        query = db_pair[f"{pair_name}_{interval}"].find().sort({'_id': DESCENDING}).limit(1)
         print(query)
     except Exception as e:
         print("Errir get last data pair", e)
