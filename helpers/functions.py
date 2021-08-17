@@ -5,7 +5,7 @@ import time
 
 import pandas as pd
 from binance.client import Client
-from database.crud import set_invalid_pair, save_historic, get_data_pair, get_last_data_pair
+from database.crud import set_invalid_pair, save_historic, get_data_pair, get_last_data_pair, get_pair_historic
 
 
 def read_symbols()-> list:
@@ -101,11 +101,11 @@ def get_historic(pair: str, interval: str, client: Client):
             set_invalid_pair(pair, interval)
     else:
         try:
+            par_df = get_pair_historic(pair, interval)
             last_reg = pd.to_datetime(get_last_data_pair(pair, interval), unit="ms") - pd.Timedelta("4 Hours")
             interval_coeficient = get_time_coeficient(interval)
             print(interval_coeficient)
             if float(pd.Timedelta(pd.to_datetime("today") - last_reg).value / 3600000000000) >= interval_coeficient:
-                print("Es mayor")
                 last_reg = str(last_reg + pd.Timedelta(str("4 Hours")))
 
                 data = pd.DataFrame(

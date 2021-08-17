@@ -39,6 +39,15 @@ def get_data_pair(pair_name: str, interval: str):
         pass
     return False
 
+def get_pair_historic(pair_name: str, interval: str):
+    try:
+        query = db_pair[f"{pair_name}_{interval}"].find()
+        result = pd.DataFrame(list(query))
+        return result
+    except Exception as e:
+        print("Error get data historic: ", e)
+        return pd.DataFrame()
+
 def get_last_data_pair(pair_name: str, interval: str):
     try:
         query = db_pair[f"{pair_name}_{interval}"].find().sort('_id', DESCENDING).limit(1)
