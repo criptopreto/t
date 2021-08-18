@@ -5,7 +5,7 @@ import time
 
 import pandas as pd
 from binance.client import Client
-from database.crud import set_invalid_pair, save_historic, get_data_pair, get_last_data_pair, get_pair_historic
+from database.crud import set_invalid_pair, save_historic, get_data_pair, get_last_data_pair, get_pair_historic, update_historic
 
 
 def read_symbols()-> list:
@@ -115,16 +115,16 @@ def get_historic(pair: str, interval: str, client: Client):
 
                 data.datetime = pd.to_datetime(data.datetime, unit="ms")
                 data.closetime = pd.to_datetime(data.closetime, unit="ms")
-
                 data[["open", "high", "low", "close", "volume"]] = data[["open", "high", "low", "close", "volume"
                                                                             ]].apply(pd.to_numeric)
 
                 data = data[["datetime", "open", "high",
                                 "low", "close", "volume", "closetime"]][0:]
+                data = data.iloc[1:,:]
 
                 # Actualizar el registro
                 update_historic(data, pair, interval)
         except Exception as e:
-            print(f"{pair} | Error get Historic: {IndexError}")
+            print(f"{pair} | Error get Historic: {e}")
             print("Invalidando par")
             set_invalid_pair(pair, interval)
