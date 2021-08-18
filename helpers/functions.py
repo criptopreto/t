@@ -101,7 +101,6 @@ def get_historic(pair: str, interval: str, client: Client):
             set_invalid_pair(pair, interval)
     else:
         try:
-            par_df = get_pair_historic(pair, interval)
             last_reg = pd.to_datetime(get_last_data_pair(pair, interval), unit="ms") - pd.Timedelta("4 Hours")
             interval_coeficient = get_time_coeficient(interval)
             if float(pd.Timedelta(pd.to_datetime("today") - last_reg).value / 3600000000000) >= interval_coeficient:
@@ -123,11 +122,8 @@ def get_historic(pair: str, interval: str, client: Client):
                 data = data[["datetime", "open", "high",
                                 "low", "close", "volume", "closetime"]][0:]
 
-                # Eliminar el último registro del archivo guardado para reemplazarlo por el registro actualizado
-                par_df.drop(par_df.tail(1).index, inplace=True)
-
-                par_df = par_df.append(par_df, ignore_index=True)
-                save_historic(data, pair, interval)
+                # Actualizar el registro
+                update_historic(data, pair, interval)
         except Exception as e:
             print(f"{pair} | Error get Historic: {IndexError}")
             print("Invalidando par")
