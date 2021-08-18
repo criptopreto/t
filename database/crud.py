@@ -76,3 +76,14 @@ def save_historic(pair_data: pd.DataFrame, pair: str, interval: str):
         db_pair[f"{pair}_{interval}"].insert_many(records)
     except Exception as e:
         print(f"{pair}-{interval} | Save Historic: {e}")
+
+def update_historic(pair_data: pd.DataFrame, pair: str, interval: str):
+    try:
+        query = db_pair[f"{pair_name}_{interval}"].find().sort('_id', DESCENDING).limit(1)
+        last_record_id = query[1]["_id"]
+        print(last_record_id, query[0]["_id"])
+        records = json.loads(pair_data.to_json(orient="records"))
+        db_pair[f"{pair}_{interval}"].delete_one({"_id": last_record_id})
+        db_pair[f"{pair}_{interval}"].insert_many(records)
+    except Exception as e:
+        print(f"{pair}-{interval} | Save Historic: {e}")
